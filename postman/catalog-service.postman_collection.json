@@ -1,0 +1,115 @@
+﻿{
+  "info": {
+    "name": "catalog-service",
+    "description": "Catalog service API. Variables: baseUrl, productId, adminToken (JWT for admin operations).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" },
+    { "key": "productId", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "newSku", "value": "VIDEO-SKU-001" }
+  ],
+  "item": [
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "GET /api/v1/categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products (public)",
+      "item": [
+        {
+          "name": "GET /api/v1/products",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products?published_only=true&search=&category_id=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                { "key": "published_only", "value": "true" },
+                { "key": "search", "value": "" },
+                { "key": "category_id", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /api/v1/products/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/products/{{productId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products (admin)",
+      "item": [
+        {
+          "name": "POST /api/v1/products",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"00000000-0000-0000-0000-000000000001\",\n  \"sku\": \"{{newSku}}\",\n  \"name\": \"Светодиодная лампа A60 10Вт 4000K Е27\",\n  \"description\": \"Описание товара\",\n  \"price\": 189.00,\n  \"stock_qty\": 120,\n  \"image_url\": \"https://cdn.example.com/lamps/a60.jpg\",\n  \"is_published\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/products"
+          }
+        },
+        {
+          "name": "PUT /api/v1/products/:id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"00000000-0000-0000-0000-000000000001\",\n  \"sku\": \"{{newSku}}\",\n  \"name\": \"Светодиодная лампа A60 10Вт 4000K Е27\",\n  \"description\": \"Обновленное описание\",\n  \"price\": 199.00,\n  \"stock_qty\": 100,\n  \"image_url\": \"https://cdn.example.com/lamps/a60.jpg\",\n  \"is_published\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/products/{{productId}}"
+          }
+        },
+        {
+          "name": "PATCH /api/v1/products/:id/publish",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/products/{{productId}}/publish"
+          }
+        },
+        {
+          "name": "DELETE /api/v1/products/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/v1/products/{{productId}}"
+          }
+        }
+      ]
+    }
+  ]
+}
+

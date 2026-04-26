@@ -1,0 +1,14 @@
+{
+  "name": "web1-microservices",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix services/catalog-service && npm install --prefix services/order-service",
+    "dev:catalog": "npm run dev --prefix services/catalog-service",
+    "dev:order": "npm run dev --prefix services/order-service",
+    "dev": "concurrently \"npm run dev:catalog\" \"npm run dev:order\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

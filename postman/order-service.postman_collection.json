@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "order-service",
+    "description": "Order service API. Storefront uses X-Cart-Key/cartKey, admin endpoints use Bearer adminToken.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3002" },
+    { "key": "adminToken", "value": "" },
+    { "key": "cartKey", "value": "client-generated-uuid-or-string" },
+    { "key": "itemId", "value": "" },
+    { "key": "orderId", "value": "" },
+    { "key": "orderNumber", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "GET /api/v1/cart",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-Cart-Key", "value": "{{cartKey}}" }],
+            "url": "{{baseUrl}}/api/v1/cart"
+          }
+        },
+        {
+          "name": "POST /api/v1/cart/items",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Cart-Key", "value": "{{cartKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"00000000-0000-0000-0000-000000000001\",\n  \"quantity\": 2\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/cart/items"
+          }
+        },
+        {
+          "name": "PATCH /api/v1/cart/items/:itemId",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Cart-Key", "value": "{{cartKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 3\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/cart/items/{{itemId}}"
+          }
+        },
+        {
+          "name": "DELETE /api/v1/cart/items/:itemId",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "X-Cart-Key", "value": "{{cartKey}}" }],
+            "url": "{{baseUrl}}/api/v1/cart/items/{{itemId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders (storefront)",
+      "item": [
+        {
+          "name": "POST /api/v1/orders",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Cart-Key", "value": "{{cartKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cart_key\": \"{{cartKey}}\",\n  \"customer_name\": \"РРІР°РЅРѕРІ РРІР°РЅ\",\n  \"customer_phone\": \"+79001234567\",\n  \"customer_email\": \"user@example.com\",\n  \"delivery_address\": \"Рі. РњРѕСЃРєРІР°, СѓР». РџСЂРёРјРµСЂРЅР°СЏ, Рґ. 1\",\n  \"delivery_comment\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/orders"
+          }
+        },
+        {
+          "name": "GET /api/v1/orders/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/orders/{{orderId}}"
+          }
+        },
+        {
+          "name": "GET /api/v1/orders/by-number/:orderNumber",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/orders/by-number/{{orderNumber}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders (admin)",
+      "item": [
+        {
+          "name": "GET /api/v1/admin/orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders?page=1&page_size=20&status=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20" },
+                { "key": "status", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /api/v1/admin/orders/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}"
+          }
+        },
+        {
+          "name": "PATCH /api/v1/admin/orders/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"confirmed\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status"
+          }
+        }
+      ]
+    }
+  ]
+}
+
