@@ -36,18 +36,18 @@ export function P3_Cart() {
       transition={{ duration: 0.5 }}
     >
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">Корзина</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Корзина</h1>
         <p className="mt-2 text-zinc-400">
           {items.length} {items.length === 1 ? 'товар' : 'товара'}
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-8">
-        <div className="col-span-2 space-y-4">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+        <div className="space-y-4 lg:col-span-2">
           {items.map((item, index) => (
             <motion.div
               key={item.productId}
-              className="flex gap-6 rounded-lg border border-zinc-800 bg-zinc-900/30 p-6"
+              className="flex flex-col gap-4 rounded-lg border border-zinc-800 bg-zinc-900/30 p-4 sm:flex-row sm:gap-6 sm:p-6"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
@@ -87,7 +87,7 @@ export function P3_Cart() {
                 </div>
               </div>
 
-              <div className="flex flex-col items-end justify-between">
+              <div className="flex flex-row items-center justify-between sm:flex-col sm:items-end">
                 <p className="text-lg font-medium text-amber-400">
                   {(item.price * item.quantity).toLocaleString('ru-RU')} ₽
                 </p>

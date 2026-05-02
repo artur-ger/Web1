@@ -58,12 +58,12 @@ export function P4_Checkout() {
       </Link>
 
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">Оформление заказа</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Оформление заказа</h1>
         <p className="mt-2 text-zinc-400">Заполните данные для доставки</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-8">
-        <form onSubmit={handleSubmit} className="col-span-2 space-y-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+        <form onSubmit={handleSubmit} className="space-y-6 lg:col-span-2">
           <motion.div
             className="space-y-4 rounded-lg border border-zinc-800 bg-zinc-900/30 p-6"
             initial={{ opacity: 0, y: 20 }}
@@ -88,7 +88,7 @@ export function P4_Checkout() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="phone" className="mb-2 block text-sm text-zinc-400">
                     Телефон *
@@ -190,7 +190,7 @@ export function P4_Checkout() {
               </span>
             </label>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <motion.button
                 type="submit"
                 className="flex-1 rounded-lg bg-amber-500 py-3 font-medium text-zinc-950 transition-colors hover:bg-amber-400"
@@ -201,7 +201,7 @@ export function P4_Checkout() {
               </motion.button>
               <Link
                 to="/cart"
-                className="rounded-lg border border-zinc-800 px-6 py-3 font-medium text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-100"
+                className="rounded-lg border border-zinc-800 px-6 py-3 text-center font-medium text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-100"
               >
                 Назад в корзину
               </Link>

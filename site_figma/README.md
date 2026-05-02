@@ -1,34 +1,42 @@
-# E-commerce web app (экспорт Figma Make)
+# Internet Store Frontend (DZ3)
 
-Оригинальный макет и прототип в **Figma Sites**:
+React-приложение пользовательской части интернет-магазина для ДЗ3.
 
-https://www.figma.com/site/9m8dPinVptbgaKZwcNm8Em/wep-app?node-id=19-12915&t=2ZTJhAeXvxOiSGPb-1 
+Прототип в Figma Sites:  
+https://www.figma.com/site/9m8dPinVptbgaKZwcNm8Em/wep-app?node-id=19-12915&t=2ZTJhAeXvxOiSGPb-1
 
-## Запуск
+## Технологии
+
+- React + Vite
+- React Router DOM (пакет `react-router`)
+- Zustand (корзина)
+- Mock-данные без backend
+
+## Запуск локально
 
 ```bash
 npm install
-# или
-pnpm install
-
 npm run dev
 ```
 
-Откройте адрес из терминала (обычно `http://localhost:5173`).
+Сборка:
 
-## Маршруты (кратко)
+```bash
+npm run build
+```
 
-| Экран | Путь |
-|-------|------|
-| P1 Каталог | `/` |
-| P2 Товар | `/product/:id` |
-| P3 Корзина | `/cart` |
-| P4 Оформление | `/checkout` |
-| P5 Подтверждение | `/confirmation/:orderNumber` |
-| A1 Вход | `/admin`, `/admin/login` |
-| A2 Товары | `/admin/products` |
-| A3 Форма товара | `/admin/products/:id` |
-| A4 Заказы | `/admin/orders` |
-| A5 Заказ | `/admin/orders/:id` |
+## Реализованные страницы и маршруты
 
-Подробнее см. `src/app/routes.ts`.
+- `P1_Catalog` — `/`
+- `P2_Product` — `/product/:id`
+- `P3_Cart` — `/cart`
+- `P4_Checkout` — `/checkout`
+- `P5_Confirmation` — `/confirmation/:orderNumber`
+
+## Что важно для ДЗ3
+
+- Реализована только пользовательская часть (без админ-панели)
+- Настроена маршрутизация и переходы между всеми страницами сценария покупки
+- Используются статические mock-данные
+- Добавлена адаптивность (включая мобильную ширину от 320px)
+

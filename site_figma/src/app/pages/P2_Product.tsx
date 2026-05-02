@@ -52,7 +52,7 @@ export function P2_Product() {
         Назад к каталогу
       </Link>
 
-      <div className="grid grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
         <motion.div
           className="space-y-4"
           initial={{ opacity: 0, x: -20 }}
@@ -68,7 +68,7 @@ export function P2_Product() {
           </div>
 
           {product.images.length > 1 && (
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               {product.images.map((image, index) => (
                 <button
                   key={index}
@@ -164,7 +164,7 @@ export function P2_Product() {
                   navigate('/cart');
                 }}
                 disabled={product.stock === 0}
-                className="rounded-lg border border-amber-500 px-6 py-3 font-medium text-amber-400 transition-colors hover:bg-amber-500/10 disabled:opacity-50"
+                className="rounded-lg border border-amber-500 px-6 py-3 text-center font-medium text-amber-400 transition-colors hover:bg-amber-500/10 disabled:opacity-50"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

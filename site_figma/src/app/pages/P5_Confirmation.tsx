@@ -25,7 +25,7 @@ export function P5_Confirmation() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-12 text-center">
+      <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-6 text-center sm:p-10 lg:p-12">
         <motion.div
           className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10"
           initial={{ scale: 0 }}
@@ -40,7 +40,7 @@ export function P5_Confirmation() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h1 className="mt-6 text-3xl font-bold tracking-tight">
+          <h1 className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl">
             Заказ успешно оформлен!
           </h1>
           <p className="mt-2 text-zinc-400">
@@ -62,7 +62,7 @@ export function P5_Confirmation() {
                 <p className="text-lg font-medium">{orderNumber}</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                 <div>
                   <p className="text-zinc-500">Сумма заказа</p>
                   <p className="font-medium text-amber-400">

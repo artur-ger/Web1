@@ -16,7 +16,7 @@ export function P1_Catalog() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <motion.div
         className="space-y-6"
         initial={{ opacity: 0, y: 20 }}
@@ -24,13 +24,13 @@ export function P1_Catalog() {
         transition={{ duration: 0.5 }}
       >
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Каталог продукции</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Каталог продукции</h1>
           <p className="mt-2 text-zinc-400">
             Профессиональное светотехническое оборудование от производителя
           </p>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500" />
             <input
@@ -45,7 +45,7 @@ export function P1_Catalog() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-6 py-3 text-sm text-zinc-100 transition-colors focus:border-amber-500 focus:outline-none"
+            className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-100 transition-colors focus:border-amber-500 focus:outline-none sm:w-auto sm:px-6"
           >
             <option value="all">Все категории</option>
             <option value="led">Светодиодные</option>
@@ -57,7 +57,7 @@ export function P1_Catalog() {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-4 gap-6"
+        className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}

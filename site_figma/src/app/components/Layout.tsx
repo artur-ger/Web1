@@ -1,21 +1,15 @@
-import { Link, Outlet, useLocation } from 'react-router';
+import { Link, Outlet } from 'react-router';
 import { ShoppingCart, Lightbulb } from 'lucide-react';
 import { useCart } from '../store/cart';
 import { motion } from 'motion/react';
 
 export function Layout() {
   const itemCount = useCart((state) => state.getItemCount());
-  const location = useLocation();
-  const isAdmin = location.pathname.startsWith('/admin');
-
-  if (isAdmin) {
-    return <Outlet />;
-  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-[1200px] px-8 py-4">
+        <div className="mx-auto max-w-[1200px] px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
               <motion.div
@@ -28,7 +22,7 @@ export function Layout() {
               <span className="text-xl tracking-tight">ЛюменЗавод</span>
             </Link>
 
-            <nav className="flex items-center gap-8">
+            <nav className="flex items-center gap-4 sm:gap-8">
               <Link
                 to="/"
                 className="text-sm text-zinc-400 transition-colors hover:text-amber-400"
@@ -57,12 +51,12 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1200px] px-8 py-12">
+      <main className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <Outlet />
       </main>
 
       <footer className="border-t border-zinc-800 bg-zinc-950/50 py-8">
-        <div className="mx-auto max-w-[1200px] px-8">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-zinc-500">
             © 2026 ЛюменЗавод. Производство светотехники
           </p>
