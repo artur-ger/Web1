@@ -1,15 +1,13 @@
-# Микросервисы (ДЗ2)
+# Backend: catalog-service и order-service
 
-## Сервисы
+- **catalog-service** — категории и товары: `http://localhost:3001`
+- **order-service** — корзина и заказы: `http://localhost:3002`
 
-- `catalog-service` — товары/категории (`http://localhost:3001`)
-- `order-service` — корзина/заказы (`http://localhost:3002`)
-
-Оба сервиса хранят данные в файловой БД `nedb-promises` в папках `data/` каждого сервиса.
+Данные лежат в NeDB, файлы в `services/*/data/`. Фронт из `site_figma` ходит на эти два порта по HTTP.
 
 ## Локальный запуск
 
-### Вариант A: одной командой из корня проекта (рекомендуется)
+### Из корня репозитория Web1
 
 ```bash
 cd c:\Web1
@@ -23,9 +21,7 @@ npm run dev
 - `http://localhost:3001` (`catalog-service`)
 - `http://localhost:3002` (`order-service`)
 
-Скрипты в корне настроены корректно (`npm run` показывает их).
-
-### Вариант B: запуск сервисов отдельно
+### Запуск каждого сервиса по отдельности
 
 #### 1) Сервис товаров (catalog-service)
 

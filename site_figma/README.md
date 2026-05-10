@@ -1,56 +1,52 @@
-# Internet Store Frontend (DZ4)
+# Frontend (витрина магазина)
 
-React-приложение пользовательской части интернет-магазина для ДЗ4 с интеграцией backend-микросервисов.
+React + Vite. Маршруты: каталог, карточка товара, корзина, оформление, экран с номером заказа. Данные товаров и корзины приходят с локальных сервисов через `fetch`; состояние — Redux Toolkit (`src/app/store`). Картинки в карточках — SVG из `src/app/data/productIcons.ts`, подбираются по SKU из каталога.
 
 Прототип в Figma Sites:  
 https://www.figma.com/site/9m8dPinVptbgaKZwcNm8Em/wep-app?node-id=19-12915&t=2ZTJhAeXvxOiSGPb-1
 
-## Технологии
+## Что нужно перед `npm run dev`
 
-- React + Vite
-- React Router (пакет `react-router`)
-- Redux Toolkit + React Redux
-- HTTP-запросы через `fetch`
+Сначала поднять backend из корня репозитория (`Web1`):
 
-## Запуск локально
+```bash
+npm run install:all
+npm run dev
+```
+
+Должны слушать **localhost:3001** (каталог) и **localhost:3002** (заказы).
+
+Потом уже здесь:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Для работы сценария корзины и заказа должны быть запущены backend-сервисы:
-
-- `catalog-service` на `http://localhost:3001`
-- `order-service` на `http://localhost:3002`
-
-Если сервисы запущены на других адресах, задайте переменные окружения:
-
-```bash
-VITE_CATALOG_API_URL=http://localhost:3001/api/v1
-VITE_ORDER_API_URL=http://localhost:3002/api/v1
-```
-
-Сборка:
+Сборка продакшена:
 
 ```bash
 npm run build
 ```
 
-## Реализованные страницы и маршруты
+## Если API не на localhost или другие порты
 
-- `P1_Catalog` — `/`
-- `P2_Product` — `/product/:id`
-- `P3_Cart` — `/cart`
-- `P4_Checkout` — `/checkout`
-- `P5_Confirmation` — `/confirmation/:orderNumber`
+По умолчанию в коде зашиты `http://localhost:3001/api/v1` и `http://localhost:3002/api/v1`. Чтобы переопределить, создай файл `.env` в этой папке:
 
-## Что реализовано для ДЗ4
+```
+VITE_CATALOG_API_URL=http://localhost:3001/api/v1
+VITE_ORDER_API_URL=http://localhost:3002/api/v1
+```
 
-- Реализована только пользовательская часть (без админ-панели)
-- Подключена интеграция с микросервисом товаров (`catalog-service`)
-- Подключена интеграция с микросервисом заказов (`order-service`)
-- Используются `fetch`-запросы с обработкой ответов и ошибок
-- Состояние товаров, корзины и заказов вынесено в Redux
-- Добавлена адаптивность (включая мобильную ширину от 320px)
+## Маршруты
 
+| Страница | Адрес |
+|----------|--------|
+| Каталог | `/` |
+| Товар | `/product/:id` |
+| Корзина | `/cart` |
+| Оформление | `/checkout` |
+| Подтверждение | `/confirmation/:orderNumber` |
+
+Проверить, что заказ реально создался на сервере:  
+`http://localhost:3002/api/v1/orders/by-number/<номер с экрана подтверждения>`
