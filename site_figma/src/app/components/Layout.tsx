@@ -1,10 +1,22 @@
+import { useEffect } from 'react';
 import { Link, Outlet } from 'react-router';
 import { ShoppingCart, Lightbulb } from 'lucide-react';
-import { useCart } from '../store/cart';
 import { motion } from 'motion/react';
+import { loadCart } from '../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export function Layout() {
-  const itemCount = useCart((state) => state.getItemCount());
+  const dispatch = useAppDispatch();
+  const cartStatus = useAppSelector((state) => state.cart.status);
+  const itemCount = useAppSelector((state) =>
+    state.cart.value?.items.reduce((sum, item) => sum + item.quantity, 0) || 0,
+  );
+
+  useEffect(() => {
+    if (cartStatus === 'idle') {
+      dispatch(loadCart());
+    }
+  }, [cartStatus, dispatch]);
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">

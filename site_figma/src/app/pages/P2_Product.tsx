@@ -1,18 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router';
 import { ArrowLeft, Minus, Plus, ShoppingCart } from 'lucide-react';
-import { products } from '../data/products';
-import { useCart } from '../store/cart';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { resolveProductImageUrl } from '../utils/productImage';
+import { addItemToCart } from '../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchProductById } from '../store/productsSlice';
 
 export function P2_Product() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find((p) => p.id === id);
+  const dispatch = useAppDispatch();
+  const { items, selectedProduct, selectedStatus, error } = useAppSelector((state) => state.products);
+  const cartMutationStatus = useAppSelector((state) => state.cart.mutationStatus);
+  const product = items.find((p) => p.id === id) || selectedProduct;
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const addItem = useCart((state) => state.addItem);
+  const [isAdding, setIsAdding] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductById(id));
+    }
+  }, [dispatch, id]);
+
+  if (selectedStatus === 'loading' && !product) {
+    return <p className="text-zinc-400">Загрузка товара...</p>;
+  }
 
   if (!product) {
     return (
@@ -25,16 +39,15 @@ export function P2_Product() {
     );
   }
 
-  const handleAddToCart = () => {
-    addItem(
-      {
-        productId: product.id,
-        productName: product.name,
-        productImage: product.image,
-        price: product.price,
-      },
-      quantity
-    );
+  const handleAddToCart = async (): Promise<boolean> => {
+    if (!product) return false;
+    setIsAdding(true);
+    try {
+      await dispatch(addItemToCart({ productId: product.id, quantity })).unwrap();
+      return true;
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -61,33 +74,11 @@ export function P2_Product() {
         >
           <div className="aspect-square overflow-hidden rounded-lg bg-zinc-900/50">
             <ImageWithFallback
-              src={product.images[selectedImage]}
+              src={resolveProductImageUrl(product)}
               alt={product.name}
               className="h-full w-full object-cover"
             />
           </div>
-
-          {product.images.length > 1 && (
-            <div className="flex flex-col gap-3 sm:flex-row">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`aspect-square w-20 overflow-hidden rounded border-2 transition-colors ${
-                    selectedImage === index
-                      ? 'border-amber-500'
-                      : 'border-zinc-800 hover:border-zinc-600'
-                  }`}
-                >
-                  <ImageWithFallback
-                    src={image}
-                    alt={`${product.name} - вид ${index + 1}`}
-                    className="h-full w-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
         </motion.div>
 
         <motion.div
@@ -112,14 +103,14 @@ export function P2_Product() {
               <span className="text-zinc-400">Наличие на складе:</span>
               <span
                 className={
-                  product.stock > 50
+                  product.stock_qty > 50
                     ? 'font-medium text-green-400'
-                    : product.stock > 0
+                    : product.stock_qty > 0
                       ? 'font-medium text-amber-400'
                       : 'font-medium text-red-400'
                 }
               >
-                {product.stock > 0 ? `${product.stock} шт.` : 'Нет в наличии'}
+                {product.stock_qty > 0 ? `${product.stock_qty} шт.` : 'Нет в наличии'}
               </span>
             </div>
           </div>
@@ -137,8 +128,8 @@ export function P2_Product() {
                 </button>
                 <span className="w-12 text-center font-medium">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  disabled={quantity >= product.stock}
+                  onClick={() => setQuantity(Math.min(product.stock_qty, quantity + 1))}
+                  disabled={quantity >= product.stock_qty}
                   className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/50 text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-100 disabled:opacity-50"
                 >
                   <Plus className="h-4 w-4" />
@@ -148,22 +139,25 @@ export function P2_Product() {
 
             <div className="flex gap-3">
               <motion.button
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                onClick={() => {
+                  void handleAddToCart();
+                }}
+                disabled={product.stock_qty === 0 || isAdding || cartMutationStatus === 'loading'}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-amber-500 px-6 py-3 font-medium text-zinc-950 transition-colors hover:bg-amber-400 disabled:opacity-50"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <ShoppingCart className="h-5 w-5" />
-                В корзину
+                {isAdding ? 'Добавляем...' : 'В корзину'}
               </motion.button>
 
               <motion.button
                 onClick={() => {
-                  handleAddToCart();
-                  navigate('/cart');
+                  void handleAddToCart().then((ok) => {
+                    if (ok) navigate('/cart');
+                  });
                 }}
-                disabled={product.stock === 0}
+                disabled={product.stock_qty === 0 || isAdding || cartMutationStatus === 'loading'}
                 className="rounded-lg border border-amber-500 px-6 py-3 text-center font-medium text-amber-400 transition-colors hover:bg-amber-500/10 disabled:opacity-50"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -174,6 +168,7 @@ export function P2_Product() {
           </div>
         </motion.div>
       </div>
+      {error && <p className="text-sm text-red-300">{error}</p>}
     </motion.div>
   );
 }

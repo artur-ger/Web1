@@ -1,18 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { Search } from 'lucide-react';
-import { products, categoryNames } from '../data/products';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { resolveProductImageUrl } from '../utils/productImage';
+import { fetchCatalogData } from '../store/productsSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export function P1_Catalog() {
+  const dispatch = useAppDispatch();
+  const { items, categories, status, error } = useAppSelector((state) => state.products);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<string>('all');
 
-  const filteredProducts = products.filter((product) => {
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCatalogData());
+    }
+  }, [dispatch, status]);
+
+  const categoryById = useMemo(
+    () =>
+      categories.reduce<Record<string, string>>((acc, current) => {
+        acc[current.id] = current.name;
+        return acc;
+      }, {}),
+    [categories],
+  );
+
+  const selectedCategoryId = useMemo(() => {
+    if (category === 'all') return null;
+    return categories.find((item) => item.slug === category)?.id || null;
+  }, [categories, category]);
+
+  const filteredProducts = items.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = category === 'all' || product.category === category;
-    return matchesSearch && matchesCategory && product.visible;
+    const matchesCategory = !selectedCategoryId || product.category_id === selectedCategoryId;
+    return matchesSearch && matchesCategory && product.is_published;
   });
 
   return (
@@ -56,12 +80,21 @@ export function P1_Catalog() {
         </div>
       </motion.div>
 
+      {status === 'failed' && (
+        <div className="rounded-lg border border-red-900/40 bg-red-950/40 p-4 text-sm text-red-200">
+          {error || 'Не удалось загрузить товары'}
+        </div>
+      )}
+
       <motion.div
         className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
+        {status === 'loading' && (
+          <p className="text-zinc-400">Загрузка товаров...</p>
+        )}
         {filteredProducts.map((product, index) => (
           <motion.div
             key={product.id}
@@ -75,7 +108,7 @@ export function P1_Catalog() {
             >
               <div className="aspect-square overflow-hidden rounded-lg bg-zinc-900/50">
                 <ImageWithFallback
-                  src={product.image}
+                  src={resolveProductImageUrl(product)}
                   alt={product.name}
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
@@ -87,7 +120,7 @@ export function P1_Catalog() {
                     {product.name}
                   </h3>
                   <span className="shrink-0 rounded bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
-                    {categoryNames[product.category]}
+                    {categoryById[product.category_id] || 'Категория'}
                   </span>
                 </div>
 

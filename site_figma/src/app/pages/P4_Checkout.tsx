@@ -1,13 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
-import { useCart } from '../store/cart';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { resolveCartLineImage } from '../utils/productImage';
+import { createOrder } from '../store/ordersSlice';
+import { loadCart } from '../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export function P4_Checkout() {
   const navigate = useNavigate();
-  const { items, getTotal, clearCart } = useCart();
+  const dispatch = useAppDispatch();
+  const catalogProducts = useAppSelector((state) => state.products.items);
+  const { value: cart, status: cartStatus } = useAppSelector((state) => state.cart);
+  const { status: orderStatus, error: orderError } = useAppSelector((state) => state.orders);
+  const items = cart?.items || [];
+  const total = cart?.total_amount || 0;
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -16,6 +24,12 @@ export function P4_Checkout() {
     comment: '',
     agree: false,
   });
+
+  useEffect(() => {
+    if (cartStatus === 'idle') {
+      dispatch(loadCart());
+    }
+  }, [dispatch, cartStatus]);
 
   if (items.length === 0) {
     return (
@@ -30,16 +44,20 @@ export function P4_Checkout() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const orderNumber = `ORD-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-    const total = getTotal(); // Сохраняем итог до очистки корзины
-
-    navigate(`/confirmation/${orderNumber}`, {
-      state: { formData, total },
-    });
-
-    // Очищаем корзину после навигации
-    setTimeout(() => clearCart(), 100);
+    dispatch(
+      createOrder({
+        customer_name: formData.name,
+        customer_phone: formData.phone,
+        customer_email: formData.email,
+        delivery_address: formData.address,
+        delivery_comment: formData.comment,
+      }),
+    )
+      .unwrap()
+      .then((order) => {
+        dispatch(loadCart());
+        navigate(`/confirmation/${order.order_number}`);
+      });
   };
 
   return (
@@ -193,11 +211,12 @@ export function P4_Checkout() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <motion.button
                 type="submit"
+                disabled={orderStatus === 'loading'}
                 className="flex-1 rounded-lg bg-amber-500 py-3 font-medium text-zinc-950 transition-colors hover:bg-amber-400"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
               >
-                Подтвердить заказ
+                {orderStatus === 'loading' ? 'Оформление...' : 'Подтвердить заказ'}
               </motion.button>
               <Link
                 to="/cart"
@@ -220,22 +239,26 @@ export function P4_Checkout() {
 
             <div className="mt-6 space-y-3">
               {items.map((item) => (
-                <div key={item.productId} className="flex items-start gap-3">
+                <div key={item.product_id} className="flex items-start gap-3">
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded bg-zinc-900">
                     <ImageWithFallback
-                      src={item.productImage}
-                      alt={item.productName}
+                      src={resolveCartLineImage(
+                        item.product_id,
+                        item.product_image_snapshot,
+                        catalogProducts.find((p) => p.id === item.product_id)?.sku,
+                      )}
+                      alt={item.product_name_snapshot}
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="flex-1 text-sm">
-                    <p className="line-clamp-2 text-zinc-300">{item.productName}</p>
+                    <p className="line-clamp-2 text-zinc-300">{item.product_name_snapshot}</p>
                     <p className="mt-1 text-xs text-zinc-500">
-                      {item.quantity} × {item.price.toLocaleString('ru-RU')} ₽
+                      {item.quantity} × {item.unit_price_snapshot.toLocaleString('ru-RU')} ₽
                     </p>
                   </div>
                   <p className="shrink-0 text-sm font-medium">
-                    {(item.price * item.quantity).toLocaleString('ru-RU')} ₽
+                    {item.line_total.toLocaleString('ru-RU')} ₽
                   </p>
                 </div>
               ))}
@@ -244,7 +267,7 @@ export function P4_Checkout() {
                 <div className="flex items-center justify-between">
                   <span className="font-medium">Итого:</span>
                   <span className="text-2xl font-bold text-amber-400">
-                    {getTotal().toLocaleString('ru-RU')} ₽
+                    {total.toLocaleString('ru-RU')} ₽
                   </span>
                 </div>
               </div>
@@ -252,6 +275,7 @@ export function P4_Checkout() {
           </div>
         </motion.div>
       </div>
+      {orderError && <p className="text-sm text-red-300">{orderError}</p>}
     </motion.div>
   );
 }

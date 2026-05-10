@@ -1,12 +1,29 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Trash2, ShoppingBag } from 'lucide-react';
-import { useCart } from '../store/cart';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { resolveCartLineImage } from '../utils/productImage';
+import { changeCartItemQuantity, deleteCartItem, loadCart } from '../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export function P3_Cart() {
-  const { items, removeItem, updateQuantity, getTotal } = useCart();
+  const dispatch = useAppDispatch();
+  const catalogProducts = useAppSelector((state) => state.products.items);
+  const { value: cart, status, mutationStatus, error } = useAppSelector((state) => state.cart);
   const navigate = useNavigate();
+  const items = cart?.items || [];
+  const total = cart?.total_amount || 0;
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(loadCart());
+    }
+  }, [dispatch, status]);
+
+  if (status === 'loading' && !cart) {
+    return <p className="text-zinc-400">Загрузка корзины...</p>;
+  }
 
   if (items.length === 0) {
     return (
@@ -46,7 +63,7 @@ export function P3_Cart() {
         <div className="space-y-4 lg:col-span-2">
           {items.map((item, index) => (
             <motion.div
-              key={item.productId}
+              key={item.id}
               className="flex flex-col gap-4 rounded-lg border border-zinc-800 bg-zinc-900/30 p-4 sm:flex-row sm:gap-6 sm:p-6"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -54,23 +71,30 @@ export function P3_Cart() {
             >
               <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-zinc-900">
                 <ImageWithFallback
-                  src={item.productImage}
-                  alt={item.productName}
+                  src={resolveCartLineImage(
+                    item.product_id,
+                    item.product_image_snapshot,
+                    catalogProducts.find((p) => p.id === item.product_id)?.sku,
+                  )}
+                  alt={item.product_name_snapshot}
                   className="h-full w-full object-cover"
                 />
               </div>
 
               <div className="flex flex-1 flex-col justify-between">
                 <div>
-                  <h3 className="font-medium">{item.productName}</h3>
+                  <h3 className="font-medium">{item.product_name_snapshot}</h3>
                   <p className="mt-1 text-sm text-zinc-400">
-                    {item.price.toLocaleString('ru-RU')} ₽
+                    {item.unit_price_snapshot.toLocaleString('ru-RU')} ₽
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                    onClick={() =>
+                      dispatch(changeCartItemQuantity({ itemId: item.id, quantity: item.quantity - 1 }))
+                    }
+                    disabled={mutationStatus === 'loading'}
                     className="flex h-8 w-8 items-center justify-center rounded border border-zinc-800 bg-zinc-900/50 text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-100"
                   >
                     −
@@ -79,7 +103,10 @@ export function P3_Cart() {
                     {item.quantity}
                   </span>
                   <button
-                    onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                    onClick={() =>
+                      dispatch(changeCartItemQuantity({ itemId: item.id, quantity: item.quantity + 1 }))
+                    }
+                    disabled={mutationStatus === 'loading'}
                     className="flex h-8 w-8 items-center justify-center rounded border border-zinc-800 bg-zinc-900/50 text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-100"
                   >
                     +
@@ -89,10 +116,11 @@ export function P3_Cart() {
 
               <div className="flex flex-row items-center justify-between sm:flex-col sm:items-end">
                 <p className="text-lg font-medium text-amber-400">
-                  {(item.price * item.quantity).toLocaleString('ru-RU')} ₽
+                  {item.line_total.toLocaleString('ru-RU')} ₽
                 </p>
                 <button
-                  onClick={() => removeItem(item.productId)}
+                    onClick={() => dispatch(deleteCartItem(item.id))}
+                    disabled={mutationStatus === 'loading'}
                   className="flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-red-400"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -115,7 +143,7 @@ export function P3_Cart() {
             <div className="mt-6 space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-zinc-400">Товары:</span>
-                <span>{getTotal().toLocaleString('ru-RU')} ₽</span>
+                <span>{total.toLocaleString('ru-RU')} ₽</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-zinc-400">Доставка:</span>
@@ -126,7 +154,7 @@ export function P3_Cart() {
                 <div className="flex items-center justify-between">
                   <span className="font-medium">К оплате:</span>
                   <span className="text-2xl font-bold text-amber-400">
-                    {getTotal().toLocaleString('ru-RU')} ₽
+                    {total.toLocaleString('ru-RU')} ₽
                   </span>
                 </div>
               </div>
@@ -150,6 +178,7 @@ export function P3_Cart() {
           </div>
         </motion.div>
       </div>
+      {error && <p className="text-sm text-red-300">{error}</p>}
     </motion.div>
   );
 }

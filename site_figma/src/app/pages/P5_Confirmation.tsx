@@ -1,16 +1,29 @@
-import { useParams, useLocation, Link } from 'react-router';
+import { useEffect } from 'react';
+import { useParams, Link } from 'react-router';
 import { CheckCircle, Package } from 'lucide-react';
 import { motion } from 'motion/react';
+import { fetchOrderByNumber } from '../store/ordersSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export function P5_Confirmation() {
   const { orderNumber } = useParams();
-  const location = useLocation();
-  const { formData, total } = location.state || {};
+  const dispatch = useAppDispatch();
+  const { currentOrder, status, error } = useAppSelector((state) => state.orders);
 
-  if (!formData || !total) {
+  useEffect(() => {
+    if (orderNumber) {
+      dispatch(fetchOrderByNumber(orderNumber));
+    }
+  }, [dispatch, orderNumber]);
+
+  if (status === 'loading') {
+    return <p className="text-zinc-400">Загрузка заказа...</p>;
+  }
+
+  if (!currentOrder) {
     return (
       <div className="py-20 text-center">
-        <p className="text-zinc-500">Заказ не найден</p>
+        <p className="text-zinc-500">{error || 'Заказ не найден'}</p>
         <Link to="/" className="mt-4 inline-block text-amber-400 hover:text-amber-300">
           Вернуться в каталог
         </Link>
@@ -44,7 +57,7 @@ export function P5_Confirmation() {
             Заказ успешно оформлен!
           </h1>
           <p className="mt-2 text-zinc-400">
-            Мы отправили подтверждение на {formData.email}
+            Мы отправили подтверждение на {currentOrder.customer_email}
           </p>
         </motion.div>
 
@@ -66,7 +79,7 @@ export function P5_Confirmation() {
                 <div>
                   <p className="text-zinc-500">Сумма заказа</p>
                   <p className="font-medium text-amber-400">
-                    {total.toLocaleString('ru-RU')} ₽
+                    {currentOrder.total_amount.toLocaleString('ru-RU')} ₽
                   </p>
                 </div>
                 <div>
@@ -80,13 +93,13 @@ export function P5_Confirmation() {
 
               <div>
                 <p className="text-sm text-zinc-500">Адрес доставки</p>
-                <p className="mt-1 text-zinc-300">{formData.address}</p>
+                <p className="mt-1 text-zinc-300">{currentOrder.delivery_address}</p>
               </div>
 
               <div>
                 <p className="text-sm text-zinc-500">Контактное лицо</p>
-                <p className="mt-1 text-zinc-300">{formData.name}</p>
-                <p className="text-sm text-zinc-400">{formData.phone}</p>
+                <p className="mt-1 text-zinc-300">{currentOrder.customer_name}</p>
+                <p className="text-sm text-zinc-400">{currentOrder.customer_phone}</p>
               </div>
             </div>
           </div>

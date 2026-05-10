@@ -79,7 +79,8 @@ async function initDb() {
       description: `Описание товара: ${name}`,
       price,
       stock_qty: stockQty,
-      image_url: `https://cdn.example.com/lamps/${sku.toLowerCase()}.jpg`,
+      // Рабочие URL для демо (раньше был несуществующий cdn.example.com — картинки не грузились)
+      image_url: `https://picsum.photos/seed/${encodeURIComponent(sku)}/480/480`,
       is_published: true,
       created_at: now,
       updated_at: now
