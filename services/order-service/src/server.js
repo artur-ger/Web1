@@ -4,6 +4,7 @@ const path = require("path");
 const axios = require("axios");
 const Datastore = require("nedb-promises");
 const { v4: uuidv4 } = require("uuid");
+const { requireAuth } = require("../../shared/jwtAuth");
 
 const PORT = Number(process.env.PORT || 3002);
 const DB_DIR = process.env.DB_DIR || path.join(__dirname, "..", "data");
@@ -428,7 +429,7 @@ app.get("/api/v1/orders/by-number/:orderNumber", async (req, res, next) => {
   }
 });
 
-app.get("/api/v1/admin/orders", async (req, res, next) => {
+app.get("/api/v1/admin/orders", requireAuth, async (req, res, next) => {
   try {
     const page = Number(req.query.page || 1);
     const pageSize = Number(req.query.page_size || 20);
@@ -458,7 +459,7 @@ app.get("/api/v1/admin/orders", async (req, res, next) => {
   }
 });
 
-app.get("/api/v1/admin/orders/:id", async (req, res, next) => {
+app.get("/api/v1/admin/orders/:id", requireAuth, async (req, res, next) => {
   try {
     const order = await ordersDb.findOne({ id: req.params.id });
     if (!order) {
@@ -473,7 +474,7 @@ app.get("/api/v1/admin/orders/:id", async (req, res, next) => {
   }
 });
 
-app.patch("/api/v1/admin/orders/:id/status", async (req, res, next) => {
+app.patch("/api/v1/admin/orders/:id/status", requireAuth, async (req, res, next) => {
   try {
     const { status } = req.body || {};
     if (!status) return badRequest(res, "status обязателен");

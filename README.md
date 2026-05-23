@@ -1,6 +1,6 @@
 # Интернет-магазин ламп (учебный проект)
 
-Один репозиторий: ТЗ, Postman-коллекции, два Node-сервиса и React-фронт в папке `site_figma`.
+Один репозиторий: ТЗ, Postman, backend (catalog + order) и React-фронт в `site_figma` (витрина + админка).
 
 ## Что где лежит
 
@@ -12,7 +12,7 @@
 | `postman` | Коллекции для проверки API |
 | `TZ-Internet-magazin-lampy.md` | Техническое задание |
 
-Админ-панели в коде нет — только пользовательская часть магазина.
+В `site_figma` есть витрина и админ-панель (`/admin/*`).
 
 ## Запуск backend
 
@@ -49,5 +49,12 @@ npm run dev
 
 Адрес даст Vite (часто `http://localhost:5173`). Без запущенных **3001** и **3002** каталог и корзина работать не будут.
 
-Подробности только по фронту — в `site_figma/README.md`.
+Подробности по фронту — в `site_figma/README.md`.
+
+## Админ-панель (ДЗ5)
+
+- URL: `http://localhost:5173/admin/login`
+- Логин / пароль: **admin** / **admin** (переменные `ADMIN_LOGIN`, `ADMIN_PASSWORD` в catalog-service)
+- JWT: `POST http://localhost:3001/api/v1/auth/login` → заголовок `Authorization: Bearer …` для изменения товаров и admin-заказов
+- Без токена мутации товаров и `/api/v1/admin/*` вернут **401**
 

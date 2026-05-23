@@ -3,6 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const Datastore = require("nedb-promises");
 const { v4: uuidv4 } = require("uuid");
+const { requireAuth, handleLogin, handleMe } = require("../../shared/jwtAuth");
 
 const PORT = Number(process.env.PORT || 3001);
 const DB_DIR = process.env.DB_DIR || path.join(__dirname, "..", "data");
@@ -115,6 +116,9 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "catalog-service" });
 });
 
+app.post("/api/v1/auth/login", handleLogin);
+app.get("/api/v1/auth/me", requireAuth, handleMe);
+
 app.get("/api/v1/categories", async (req, res, next) => {
   try {
     const rows = await categoriesDb.find({}).sort({ sort_order: 1, name: 1 });
@@ -158,7 +162,7 @@ app.get("/api/v1/products/:id", async (req, res, next) => {
   }
 });
 
-app.post("/api/v1/products", async (req, res, next) => {
+app.post("/api/v1/products", requireAuth, async (req, res, next) => {
   try {
     const data = req.body || {};
     if (!data.category_id || !data.sku || !data.name) {
@@ -198,7 +202,7 @@ app.post("/api/v1/products", async (req, res, next) => {
   }
 });
 
-app.put("/api/v1/products/:id", async (req, res, next) => {
+app.put("/api/v1/products/:id", requireAuth, async (req, res, next) => {
   try {
     const existing = await productsDb.findOne({ id: req.params.id });
     if (!existing) {
@@ -242,7 +246,7 @@ app.put("/api/v1/products/:id", async (req, res, next) => {
   }
 });
 
-app.patch("/api/v1/products/:id/publish", async (req, res, next) => {
+app.patch("/api/v1/products/:id/publish", requireAuth, async (req, res, next) => {
   try {
     const existing = await productsDb.findOne({ id: req.params.id });
     if (!existing) {
@@ -266,7 +270,7 @@ app.patch("/api/v1/products/:id/publish", async (req, res, next) => {
   }
 });
 
-app.delete("/api/v1/products/:id", async (req, res, next) => {
+app.delete("/api/v1/products/:id", requireAuth, async (req, res, next) => {
   try {
     const existing = await productsDb.findOne({ id: req.params.id });
     if (!existing) {

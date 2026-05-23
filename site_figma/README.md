@@ -1,6 +1,9 @@
-# Frontend (витрина магазина)
+# Frontend (витрина + админка)
 
-React + Vite. Маршруты: каталог, карточка товара, корзина, оформление, экран с номером заказа. Данные товаров и корзины приходят с локальных сервисов через `fetch`; состояние — Redux Toolkit (`src/app/store`). Картинки в карточках — SVG из `src/app/data/productIcons.ts`, подбираются по SKU из каталога.
+React + Vite, Redux Toolkit, `fetch` к `localhost:3001` и `3002`.
+
+**Витрина:** `/`, корзина, оформление заказа.  
+**Админка:** `/admin/login` — товары (CRUD), заказы (список и смена статуса). Вход через JWT, токен в `localStorage` (`admin_access_token`).
 
 Прототип в Figma Sites:  
 https://www.figma.com/site/9m8dPinVptbgaKZwcNm8Em/wep-app?node-id=19-12915&t=2ZTJhAeXvxOiSGPb-1
@@ -40,13 +43,18 @@ VITE_ORDER_API_URL=http://localhost:3002/api/v1
 
 ## Маршруты
 
-| Страница | Адрес |
-|----------|--------|
+| Раздел | Адрес |
+|--------|--------|
 | Каталог | `/` |
 | Товар | `/product/:id` |
 | Корзина | `/cart` |
 | Оформление | `/checkout` |
 | Подтверждение | `/confirmation/:orderNumber` |
+| Вход админа | `/admin/login` |
+| Товары (админ) | `/admin/products` |
+| Форма товара | `/admin/products/:id` или `/new` |
+| Заказы (админ) | `/admin/orders` |
+| Заказ (админ) | `/admin/orders/:id` |
 
 Проверить, что заказ реально создался на сервере:  
 `http://localhost:3002/api/v1/orders/by-number/<номер с экрана подтверждения>`
