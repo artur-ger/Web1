@@ -3,7 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const Datastore = require("nedb-promises");
 const { v4: uuidv4 } = require("uuid");
-const { requireAuth, handleLogin, handleMe } = require("../../shared/jwtAuth");
+const { requireAuth } = require("../../shared/jwtAuth");
 
 const PORT = Number(process.env.PORT || 3001);
 const DB_DIR = process.env.DB_DIR || path.join(__dirname, "..", "data");
@@ -80,7 +80,7 @@ async function initDb() {
       description: `Описание товара: ${name}`,
       price,
       stock_qty: stockQty,
-      // Рабочие URL для демо (раньше был несуществующий cdn.example.com — картинки не грузились)
+      // Стабильные изображения для карточек товаров
       image_url: `https://picsum.photos/seed/${encodeURIComponent(sku)}/480/480`,
       is_published: true,
       created_at: now,
@@ -116,8 +116,6 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "catalog-service" });
 });
 
-app.post("/api/v1/auth/login", handleLogin);
-app.get("/api/v1/auth/me", requireAuth, handleMe);
 
 app.get("/api/v1/categories", async (req, res, next) => {
   try {

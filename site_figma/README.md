@@ -1,50 +1,44 @@
 # Frontend (витрина + админка)
 
-React + Vite, Redux Toolkit, `fetch` к `localhost:3001` и `3002`.
+React + Vite, Redux Toolkit.
 
-**Витрина:** `/`, корзина, оформление заказа.  
-**Админка:** `/admin/login` — товары (CRUD), заказы (список и смена статуса). Вход через JWT, токен в `localStorage` (`admin_access_token`).
+- **Витрина** — `fetch` к `localhost:3001` (каталог) и `3002` (корзина/заказы).
+- **Админка** (`/admin/*`) — `fetch` только к **admin-service** на `localhost:3003`.
 
-Прототип в Figma Sites:  
-https://www.figma.com/site/9m8dPinVptbgaKZwcNm8Em/wep-app?node-id=19-12915&t=2ZTJhAeXvxOiSGPb-1
+## Запуск
 
-## Что нужно перед `npm run dev`
-
-Сначала поднять backend из корня репозитория (`Web1`):
+Сначала backend из корня `Web1`:
 
 ```bash
 npm run install:all
 npm run dev
 ```
 
-Должны слушать **localhost:3001** (каталог) и **localhost:3002** (заказы).
+Должны работать порты **3001**, **3002**, **3003**.
 
-Потом уже здесь:
+Затем фронт:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Сборка продакшена:
+Сборка: `npm run build`.
 
-```bash
-npm run build
-```
+## Переменные окружения (опционально)
 
-## Если API не на localhost или другие порты
-
-По умолчанию в коде зашиты `http://localhost:3001/api/v1` и `http://localhost:3002/api/v1`. Чтобы переопределить, создай файл `.env` в этой папке:
+Файл `.env` в этой папке:
 
 ```
 VITE_CATALOG_API_URL=http://localhost:3001/api/v1
 VITE_ORDER_API_URL=http://localhost:3002/api/v1
+VITE_ADMIN_API_URL=http://localhost:3003/api/v1
 ```
 
 ## Маршруты
 
-| Раздел | Адрес |
-|--------|--------|
+| Раздел | URL |
+|--------|-----|
 | Каталог | `/` |
 | Товар | `/product/:id` |
 | Корзина | `/cart` |
@@ -56,5 +50,4 @@ VITE_ORDER_API_URL=http://localhost:3002/api/v1
 | Заказы (админ) | `/admin/orders` |
 | Заказ (админ) | `/admin/orders/:id` |
 
-Проверить, что заказ реально создался на сервере:  
-`http://localhost:3002/api/v1/orders/by-number/<номер с экрана подтверждения>`
+Админ: **admin** / **admin**.

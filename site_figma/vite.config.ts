@@ -21,18 +21,17 @@ function figmaAssetResolver() {
 export default defineConfig({
   plugins: [
     figmaAssetResolver(),
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
+    // React + Tailwind plugins for project styles and JSX transform
     react(),
     tailwindcss(),
   ],
   resolve: {
     alias: {
-      // Alias @ to the src directory
+      // Shortcut import path to src
       '@': path.resolve(rootDir, './src'),
     },
   },
 
-  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
+  // File types available for raw import
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })

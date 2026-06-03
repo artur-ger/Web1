@@ -1,22 +1,22 @@
-# Интернет-магазин ламп (учебный проект)
+# Интернет-магазин ламп
 
-Один репозиторий: ТЗ, Postman, backend (catalog + order) и React-фронт в `site_figma` (витрина + админка).
+Финальный проект по дисциплине «Веб-разработка».
 
-## Что где лежит
+## Архитектура
 
-| Папка / файл | Содержимое |
-|----------------|------------|
-| `services/catalog-service` | API товаров и категорий, порт **3001** |
-| `services/order-service` | API корзины и заказов, порт **3002** |
-| `site_figma` | Витрина на React (Vite, Redux, fetch к сервисам выше) |
-| `postman` | Коллекции для проверки API |
-| `TZ-Internet-magazin-lampy.md` | Техническое задание |
+| Компонент | Порт | Описание |
+|-----------|------|----------|
+| `catalog-service` | **3001** | Товары и категории |
+| `order-service` | **3002** | Корзина и заказы |
+| `admin-service` | **3003** | JWT и прокси для админки |
+| `site_figma` | **5173** | React-фронт (витрина + `/admin/*`) |
 
-В `site_figma` есть витрина и админ-панель (`/admin/*`).
+- Витрина использует `catalog-service` и `order-service`
+- Админка использует `admin-service`
 
-## Запуск backend
+## Быстрый старт
 
-Из корня `Web1`:
+### 1. Backend (три сервиса)
 
 ```bash
 npm install
@@ -24,22 +24,7 @@ npm run install:all
 npm run dev
 ```
 
-Должны стартовать **3001** и **3002**. Проверка: в браузере открыть `http://localhost:3001/health` и `http://localhost:3002/health`.
-
-Если ругается `EADDRINUSE` — порты уже заняты старым процессом Node. Закрой предыдущий терминал с `npm run dev` или найди PID:
-
-```bash
-netstat -ano | findstr ":3001"
-netstat -ano | findstr ":3002"
-```
-
-и заверши процесс: `taskkill /PID <номер> /F`.
-
-На корневом адресе API (`http://localhost:3002/` без пути) Express может ответить `Cannot GET /` — это нормально, там не раздаётся HTML.
-
-## Запуск frontend
-
-Отдельное окно терминала:
+### 2. Frontend
 
 ```bash
 cd site_figma
@@ -47,14 +32,28 @@ npm install
 npm run dev
 ```
 
-Адрес даст Vite (часто `http://localhost:5173`). Без запущенных **3001** и **3002** каталог и корзина работать не будут.
+Приложение: `http://localhost:5173`
 
-Подробности по фронту — в `site_figma/README.md`.
-
-## Админ-панель (ДЗ5)
+### Админ-панель
 
 - URL: `http://localhost:5173/admin/login`
-- Логин / пароль: **admin** / **admin** (переменные `ADMIN_LOGIN`, `ADMIN_PASSWORD` в catalog-service)
-- JWT: `POST http://localhost:3001/api/v1/auth/login` → заголовок `Authorization: Bearer …` для изменения товаров и admin-заказов
-- Без токена мутации товаров и `/api/v1/admin/*` вернут **401**
+- Логин / пароль: **admin** / **admin**
 
+## Содержимое репозитория
+
+| Путь | Назначение |
+|------|------------|
+| `services/` | catalog, order, admin + `shared/jwtAuth.js` |
+| `site_figma/` | React + Vite + Redux |
+| `postman/` | Коллекции API |
+| `TZ-Internet-magazin-lampy.md` | Техническое задание |
+| `authors.txt` | Автор |
+
+Подробнее по backend — `services/README.md`, по фронту — `site_figma/README.md`.
+
+## Проверка
+
+- `catalog-service`: `http://localhost:3001/health`
+- `order-service`: `http://localhost:3002/health`
+- `admin-service`: `http://localhost:3003/health`
+- Админка: `http://localhost:5173/admin/login` (`admin` / `admin`)

@@ -1,5 +1,4 @@
-const CATALOG_BASE = import.meta.env.VITE_CATALOG_API_URL || 'http://localhost:3001/api/v1';
-const ORDER_BASE = import.meta.env.VITE_ORDER_API_URL || 'http://localhost:3002/api/v1';
+const ADMIN_BASE = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3003/api/v1';
 
 interface ApiErrorShape {
   error?: { message?: string };
@@ -30,7 +29,7 @@ function authHeaders(token: string, extra?: HeadersInit): HeadersInit {
 
 export const adminApi = {
   async login(login: string, password: string) {
-    const response = await fetch(`${CATALOG_BASE}/auth/login`, {
+    const response = await fetch(`${ADMIN_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ login, password }),
@@ -44,14 +43,14 @@ export const adminApi = {
   },
 
   async getMe(token: string) {
-    const response = await fetch(`${CATALOG_BASE}/auth/me`, {
+    const response = await fetch(`${ADMIN_BASE}/me`, {
       headers: authHeaders(token),
     });
     return parseJson<{ login: string; role: string; full_name: string }>(response);
   },
 
   async getCategories(token: string) {
-    const response = await fetch(`${CATALOG_BASE}/categories`, {
+    const response = await fetch(`${ADMIN_BASE}/categories`, {
       headers: authHeaders(token),
     });
     return parseJson<{ items: Array<{ id: string; name: string; slug: string }> }>(response);
@@ -61,21 +60,21 @@ export const adminApi = {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     const qs = params.toString() ? `?${params}` : '';
-    const response = await fetch(`${CATALOG_BASE}/products${qs}`, {
+    const response = await fetch(`${ADMIN_BASE}/products${qs}`, {
       headers: authHeaders(token),
     });
     return parseJson<{ items: import('./types').Product[]; total: number }>(response);
   },
 
   async getProduct(token: string, id: string) {
-    const response = await fetch(`${CATALOG_BASE}/products/${id}`, {
+    const response = await fetch(`${ADMIN_BASE}/products/${id}`, {
       headers: authHeaders(token),
     });
     return parseJson<import('./types').Product>(response);
   },
 
   async createProduct(token: string, payload: Record<string, unknown>) {
-    const response = await fetch(`${CATALOG_BASE}/products`, {
+    const response = await fetch(`${ADMIN_BASE}/products`, {
       method: 'POST',
       headers: authHeaders(token),
       body: JSON.stringify(payload),
@@ -84,7 +83,7 @@ export const adminApi = {
   },
 
   async updateProduct(token: string, id: string, payload: Record<string, unknown>) {
-    const response = await fetch(`${CATALOG_BASE}/products/${id}`, {
+    const response = await fetch(`${ADMIN_BASE}/products/${id}`, {
       method: 'PUT',
       headers: authHeaders(token),
       body: JSON.stringify(payload),
@@ -93,7 +92,7 @@ export const adminApi = {
   },
 
   async setProductPublished(token: string, id: string, isPublished: boolean) {
-    const response = await fetch(`${CATALOG_BASE}/products/${id}/publish`, {
+    const response = await fetch(`${ADMIN_BASE}/products/${id}/publish`, {
       method: 'PATCH',
       headers: authHeaders(token),
       body: JSON.stringify({ is_published: isPublished }),
@@ -102,7 +101,7 @@ export const adminApi = {
   },
 
   async deleteProduct(token: string, id: string) {
-    const response = await fetch(`${CATALOG_BASE}/products/${id}`, {
+    const response = await fetch(`${ADMIN_BASE}/products/${id}`, {
       method: 'DELETE',
       headers: authHeaders(token),
     });
@@ -114,21 +113,21 @@ export const adminApi = {
   async getAdminOrders(token: string, status?: string) {
     const params = new URLSearchParams({ page: '1', page_size: '50' });
     if (status) params.set('status', status);
-    const response = await fetch(`${ORDER_BASE}/admin/orders?${params}`, {
+    const response = await fetch(`${ADMIN_BASE}/orders?${params}`, {
       headers: authHeaders(token),
     });
     return parseJson<{ items: import('./types').Order[]; total: number }>(response);
   },
 
   async getAdminOrder(token: string, id: string) {
-    const response = await fetch(`${ORDER_BASE}/admin/orders/${id}`, {
+    const response = await fetch(`${ADMIN_BASE}/orders/${id}`, {
       headers: authHeaders(token),
     });
     return parseJson<import('./types').Order>(response);
   },
 
   async patchOrderStatus(token: string, id: string, status: string) {
-    const response = await fetch(`${ORDER_BASE}/admin/orders/${id}/status`, {
+    const response = await fetch(`${ADMIN_BASE}/orders/${id}/status`, {
       method: 'PATCH',
       headers: authHeaders(token),
       body: JSON.stringify({ status }),
